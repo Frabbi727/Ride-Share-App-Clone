@@ -12,6 +12,7 @@ import 'package:ride_share_app/main.dart';
 
 class RegistrationScrren extends StatelessWidget {
   static const String idScreen = 'registrationScreen';
+  
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -26,6 +27,7 @@ class RegistrationScrren extends StatelessWidget {
     try {
        showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
          
             return ProgressDialog(

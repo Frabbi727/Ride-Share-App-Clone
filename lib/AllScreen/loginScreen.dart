@@ -8,58 +8,63 @@ import 'package:ride_share_app/AllWidgets/progressDailog.dart';
 import 'package:ride_share_app/main.dart';
 
 class LogInScreen extends StatelessWidget {
+
+
+
   static const String idScreen = 'loginScreen';
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-   BuildContext? dialogContext;
+  
 
-  void  loginAutentcatUser(BuildContext context) async {
+  void loginAutentcatUser(BuildContext context) async {
     try {
-      showDialog(context: context, 
-      builder: (BuildContext context) {
-        return ProgressDialog(message: 'Authenticating Please wait',  );
-      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ProgressDialog(
+            message: 'Authenticating Please wait',
+          );
+        },
+      );
       final firebaseUser = (await _firebaseAuth
               .signInWithEmailAndPassword(
-                  email: emailController.text, password: passwordController.text)
+                  email: emailController.text,
+                  password: passwordController.text)
               .catchError((errMsg) {
-                Navigator.pop(context);
+        Navigator.pop(context);
         displayToastMessage('Error Msg 01: ' + errMsg.toString(), context);
       }))
           .user;
       if (firebaseUser != null) {
         userRef.child(firebaseUser.uid).once().then(
-               (DataSnapshot snap) {
-                if (snap.value != null) {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, MainScreen.idScreen, (route) => false);
-                  displayToastMessage('You are Loggied in', context);
-                }
-                else {
-                  Navigator.pop(context);
-                  
-                  _firebaseAuth.signOut();
+          (DataSnapshot snap) {
+            if (snap.value != null) {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, MainScreen.idScreen, (route) => false);
+              displayToastMessage('You are Loggied in', context);
+            } else {
+              Navigator.pop(context);
 
-                  displayToastMessage(
-                      'User does not found, Create new account', context);
-                      
-                }
-              },
+              _firebaseAuth.signOut();
 
-            );
-      } else{
+              displayToastMessage(
+                  'User does not found, Create new account', context);
+            }
+          },
+        );
+      } else {
         Navigator.pop(context);
         displayToastMessage('Error occured', context);
       }
-    }   on PlatformException catch (err) {
+    } on PlatformException catch (err) {
       Navigator.pop(context);
-      displayToastMessage('Error: 02 '+ err.toString(), context);
-    }catch (err) {
+      displayToastMessage('Error: 02 ' + err.toString(), context);
+    } catch (err) {
       Navigator.pop(context);
-       displayToastMessage('Error: 03 ' + err.toString(), context);
+      displayToastMessage('Error: 03 ' + err.toString(), context);
     }
   }
 
@@ -119,18 +124,16 @@ class LogInScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                        if (emailController.text.isEmpty ||
+                      if (emailController.text.isEmpty ||
                           !emailController.text.contains(RegExp(
                               '^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]+.[com]'))) {
                         displayToastMessage('Email is not valid', context);
-                      }
-                      else if (passwordController.text.isEmpty ||
+                      } else if (passwordController.text.isEmpty ||
                           passwordController.text.length < 8) {
                         displayToastMessage(
                             'password must be 9 cherectars', context);
-                      }
-                      else{
-                            loginAutentcatUser(context);
+                      } else {
+                        loginAutentcatUser(context);
                       }
                     },
                     child: Text('Login')),
